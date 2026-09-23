@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ServiceDesk — Repair &amp; Service Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      </span>
+      <span class="brand-name">ServiceDesk</span>
+    </div>
+
+    <nav class="nav" id="mainNav">
+      <button class="nav-item is-active" data-view="dashboard">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        <span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-view="requests">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/><path d="M9 13h6M9 17h6M9 9h1"/></svg>
+        <span>Service Requests</span>
+      </button>
+      <button class="nav-item" data-view="customers">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Customers</span>
+      </button>
+      <button class="nav-item" data-view="technicians">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+        <span>Technicians</span>
+      </button>
+      <button class="nav-item" data-view="payments">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>
+        <span>Payments</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <p>Signed in as</p>
+      <strong>Shop Manager</strong>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="topbar-title">
+        <h1 id="viewTitle">Dashboard</h1>
+        <p id="viewSubtitle">Shop-wide overview of requests and revenue</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-primary" id="quickAddRequest">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          New Request
+        </button>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- DASHBOARD VIEW -->
+      <section class="view is-active" id="view-dashboard">
+        <div class="stat-grid" id="statGrid"></div>
+
+        <div class="panel-grid">
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Recent Service Requests</h2>
+              <button class="link-btn" data-goto="requests">View all</button>
+            </div>
+            <div id="recentRequestsList" class="mini-list"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Technician Workload</h2>
+              <button class="link-btn" data-goto="technicians">View all</button>
+            </div>
+            <div id="workloadList" class="mini-list"></div>
+          </section>
+        </div>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Service Status Overview</h2></div>
+          <div id="statusOverview" class="breakdown-list"></div>
+        </section>
+      </section>
+
+      <!-- SERVICE REQUESTS VIEW -->
+      <section class="view" id="view-requests">
+        <div class="toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" id="requestSearch" placeholder="Search by device, customer, or request ID…">
+          </div>
+          <select id="requestStatusFilter" class="select-input"><option value="">All Statuses</option></select>
+          <select id="requestPriorityFilter" class="select-input"><option value="">All Priorities</option></select>
+          <select id="requestTechFilter" class="select-input"><option value="">All Technicians</option></select>
+          <select id="requestSort" class="select-input">
+            <option value="date-desc">Newest First</option>
+            <option value="date-asc">Oldest First</option>
+          </select>
+          <button class="btn btn-primary" id="addRequestBtn">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            New Request
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="requestsTable">
+            <thead>
+              <tr>
+                <th>Request</th>
+                <th>Customer</th>
+                <th>Device</th>
+                <th>Technician</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Est. Cost</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="requestsTableBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="requestsEmpty" hidden>
+          <p>No service requests found</p>
+          <span>Try adjusting your search or filters, or create a new request.</span>
+        </div>
+      </section>
+
+      <!-- CUSTOMERS VIEW -->
+      <section class="view" id="view-customers">
+        <div class="toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" id="customerSearch" placeholder="Search customers by name, phone, or email…">
+          </div>
+          <button class="btn btn-primary" id="addCustomerBtn">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Add Customer
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="customersTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Address</th>
+                <th>Registered</th>
+                <th>Requests</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="customersTableBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="customersEmpty" hidden>
+          <p>No customers found</p>
+          <span>Try a different search, or add a new customer.</span>
+        </div>
+      </section>
+
+      <!-- TECHNICIANS VIEW -->
+      <section class="view" id="view-technicians">
+        <div class="toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" id="technicianSearch" placeholder="Search technicians by name or specialization…">
+          </div>
+          <button class="btn btn-primary" id="addTechnicianBtn">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Add Technician
+          </button>
+        </div>
+        <div id="techniciansGrid" class="tech-grid"></div>
+      </section>
+
+      <!-- PAYMENTS VIEW -->
+      <section class="view" id="view-payments">
+        <div class="stat-grid" id="paymentStatGrid"></div>
+        <div class="panel">
+          <div class="panel-head"><h2>Completed Services — Payment Status</h2></div>
+          <div class="table-wrap" style="box-shadow:none;border:1px solid var(--line)">
+            <table class="data-table" id="paymentsTable">
+              <thead>
+                <tr>
+                  <th>Request</th>
+                  <th>Customer</th>
+                  <th>Device</th>
+                  <th>Final Cost</th>
+                  <th>Payment Status</th>
+                  <th>Method</th>
+                  <th>Date Paid</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="paymentsTableBody"></tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="paymentsEmpty" hidden>
+            <p>No completed services yet</p>
+            <span>Completed repairs with a final cost will appear here.</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- SERVICE REQUEST MODAL -->
+<div class="modal-backdrop" id="requestModalBackdrop">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 id="requestModalTitle">New Service Request</h2>
+      <button class="icon-btn" data-close-modal="requestModalBackdrop" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form id="requestForm" class="modal-form" novalidate>
+      <input type="hidden" id="requestId">
+      <div class="form-row">
+        <label for="requestCustomer">Customer *</label>
+        <select id="requestCustomer" required></select>
+        <span class="field-error" data-error-for="requestCustomer"></span>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="requestDeviceType">Device Type *</label>
+          <select id="requestDeviceType" required>
+            <option value="">Select type</option>
+            <option>Laptop</option>
+            <option>Desktop</option>
+            <option>Smartphone</option>
+            <option>Tablet</option>
+            <option>Printer</option>
+            <option>Home Appliance</option>
+            <option>Other</option>
+          </select>
+          <span class="field-error" data-error-for="requestDeviceType"></span>
+        </div>
+        <div class="form-row">
+          <label for="requestDeviceName">Device / Item *</label>
+          <input type="text" id="requestDeviceName" placeholder="e.g. Dell XPS 13" required>
+          <span class="field-error" data-error-for="requestDeviceName"></span>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="requestProblem">Problem Description *</label>
+        <textarea id="requestProblem" rows="3" required></textarea>
+        <span class="field-error" data-error-for="requestProblem"></span>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="requestDateReceived">Date Received *</label>
+          <input type="date" id="requestDateReceived" required>
+        </div>
+        <div class="form-row">
+          <label for="requestEstCompletion">Estimated Completion</label>
+          <input type="date" id="requestEstCompletion">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="requestTechnician">Assigned Technician</label>
+          <select id="requestTechnician">
+            <option value="">Unassigned</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="requestPriority">Priority</label>
+          <select id="requestPriority">
+            <option>Low</option>
+            <option selected>Medium</option>
+            <option>High</option>
+            <option>Urgent</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="requestStatus">Status</label>
+          <select id="requestStatus">
+            <option>Received</option>
+            <option>Diagnosing</option>
+            <option>In Repair</option>
+            <option>Waiting for Parts</option>
+            <option>Ready for Pickup</option>
+            <option>Completed</option>
+            <option>Cancelled</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="requestEstCost">Estimated Cost (₱)</label>
+          <input type="number" id="requestEstCost" min="0" step="0.01" value="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="requestFinalCost">Final Cost (₱)</label>
+        <input type="number" id="requestFinalCost" min="0" step="0.01" placeholder="Set once repair is completed">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="requestModalBackdrop">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Request</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- CUSTOMER MODAL -->
+<div class="modal-backdrop" id="customerModalBackdrop">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 id="customerModalTitle">Add Customer</h2>
+      <button class="icon-btn" data-close-modal="customerModalBackdrop" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form id="customerForm" class="modal-form" novalidate>
+      <input type="hidden" id="customerId">
+      <div class="form-row">
+        <label for="customerName">Full Name *</label>
+        <input type="text" id="customerName" required>
+        <span class="field-error" data-error-for="customerName"></span>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="customerPhone">Phone *</label>
+          <input type="tel" id="customerPhone" required>
+          <span class="field-error" data-error-for="customerPhone"></span>
+        </div>
+        <div class="form-row">
+          <label for="customerEmail">Email *</label>
+          <input type="email" id="customerEmail" required>
+          <span class="field-error" data-error-for="customerEmail"></span>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="customerAddress">Address *</label>
+        <input type="text" id="customerAddress" required>
+        <span class="field-error" data-error-for="customerAddress"></span>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="customerModalBackdrop">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Customer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TECHNICIAN MODAL -->
+<div class="modal-backdrop" id="technicianModalBackdrop">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2 id="technicianModalTitle">Add Technician</h2>
+      <button class="icon-btn" data-close-modal="technicianModalBackdrop" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form id="technicianForm" class="modal-form" novalidate>
+      <input type="hidden" id="technicianId">
+      <div class="form-row">
+        <label for="technicianName">Full Name *</label>
+        <input type="text" id="technicianName" required>
+        <span class="field-error" data-error-for="technicianName"></span>
+      </div>
+      <div class="form-row">
+        <label for="technicianSpecialization">Specialization *</label>
+        <input type="text" id="technicianSpecialization" placeholder="e.g. Laptop &amp; Desktop Hardware" required>
+        <span class="field-error" data-error-for="technicianSpecialization"></span>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="technicianPhone">Phone *</label>
+          <input type="tel" id="technicianPhone" required>
+          <span class="field-error" data-error-for="technicianPhone"></span>
+        </div>
+        <div class="form-row">
+          <label for="technicianEmail">Email *</label>
+          <input type="email" id="technicianEmail" required>
+          <span class="field-error" data-error-for="technicianEmail"></span>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="technicianStatus">Status</label>
+        <select id="technicianStatus">
+          <option>Available</option>
+          <option>Busy</option>
+          <option>On Leave</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="technicianModalBackdrop">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Technician</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-backdrop" id="paymentModalBackdrop">
+  <div class="modal modal-sm" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2>Record Payment</h2>
+      <button class="icon-btn" data-close-modal="paymentModalBackdrop" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form id="paymentForm" class="modal-form" novalidate>
+      <input type="hidden" id="paymentRequestId">
+      <div class="form-row">
+        <label for="paymentStatus">Payment Status</label>
+        <select id="paymentStatus">
+          <option>Paid</option>
+          <option>Pending</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="paymentMethod">Payment Method</label>
+        <select id="paymentMethod">
+          <option>Cash</option>
+          <option>Card</option>
+          <option>GCash</option>
+          <option>Bank Transfer</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="paymentDate">Payment Date</label>
+        <input type="date" id="paymentDate">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="paymentModalBackdrop">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Payment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- SERVICE REQUEST DETAILS MODAL -->
+<div class="modal-backdrop" id="detailsModalBackdrop">
+  <div class="modal modal-lg" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2>Service Request Details</h2>
+      <button class="icon-btn" data-close-modal="detailsModalBackdrop" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="detailsBody"></div>
+  </div>
+</div>
+
+<!-- CUSTOMER DETAILS MODAL -->
+<div class="modal-backdrop" id="customerDetailsModalBackdrop">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2>Customer Details</h2>
+      <button class="icon-btn" data-close-modal="customerDetailsModalBackdrop" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="customerDetailsBody"></div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-backdrop" id="confirmModalBackdrop">
+  <div class="modal modal-sm" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h2>Confirm Delete</h2>
+      <button class="icon-btn" data-close-modal="confirmModalBackdrop" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p id="confirmMessage">Are you sure you want to delete this record? This cannot be undone.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="confirmModalBackdrop">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
